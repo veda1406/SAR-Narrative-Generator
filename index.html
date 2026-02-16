@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SAR Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,23 +11,18 @@
         theme: {
           extend: {
             borderRadius: {
-              'xl': '1rem', // Softer, more modern corners
+              'xl': '1rem',
             },
             colors: {
               background: 'var(--color-background)',
               surface: 'var(--color-surface)',
               'elevated-surface': 'var(--color-elevated-surface)',
               border: 'var(--color-border)',
-              
               'brand-primary': 'var(--color-brand-primary)',
-              'brand-secondary': 'var(--color-brand-secondary)',
               'brand-interactive': 'var(--color-brand-interactive)',
               'brand-interactive-text': 'var(--color-brand-interactive-text)',
-              
               'text-primary': 'var(--color-text-primary)',
               'text-secondary': 'var(--color-text-secondary)',
-              'text-inverted': 'var(--color-text-inverted)',
-              
               'status-high': 'var(--color-status-high)',
               'status-medium': 'var(--color-status-medium)',
               'status-low': 'var(--color-status-low)',
@@ -43,26 +37,18 @@
       }
     </script>
     <style>
-      /* Import Google Fonts */
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
 
       :root {
-        /* Layout */
         --color-background: #F7F9FC;
         --color-surface: #FFFFFF;
         --color-elevated-surface: #FFFFFF;
         --color-border: #DDE2E8;
-
-        /* Brand */
-        --color-brand-primary: #00395D; /* Deep navy */
+        --color-brand-primary: #00395D;
         --color-brand-interactive: #00395D;
         --color-brand-interactive-text: #FFFFFF;
-
-        /* Text */
         --color-text-primary: #1A202C;
         --color-text-secondary: #5A687D;
-        
-        /* Status */
         --color-status-high: #C53030;
         --color-status-medium: #D69E2E;
         --color-status-low: #38A169;
@@ -74,26 +60,15 @@
       }
 
       .dark {
-        /* Layout */
         --color-background: #0A101A;
         --color-surface: #101826;
         --color-elevated-surface: #192333;
         --color-border: #2E3A4D;
-
-        /* Gradients */
-        --gradient-card-start: var(--color-elevated-surface);
-        --gradient-card-end: var(--color-surface);
-
-        /* Brand */
-        --color-brand-primary: #52A9E0; /* Softer, muted sky blue */
+        --color-brand-primary: #52A9E0;
         --color-brand-interactive: #52A9E0;
         --color-brand-interactive-text: #0A101A;
-
-        /* Text */
         --color-text-primary: #E2E8F0;
         --color-text-secondary: #8293AD;
-        
-        /* Status */
         --color-status-high: #E57373;
         --color-status-medium: #F0B429;
         --color-status-low: #68D391;
@@ -104,49 +79,16 @@
         --color-status-info-bg: rgba(82, 169, 224, 0.1);
       }
 
-      /* Global Font Family and Base Size */
-      html, body, .font-sans {
-        font-family: 'Inter', sans-serif !important;
-        font-size: 18px; /* Increased for better readability */
-      }
-
-      /* Headings */
-      h1, .text-3xl, .text-2xl, .text-xl {
-        font-weight: 700 !important;
-      }
-      h1, .text-3xl { font-size: 2.25rem !important; } /* 36px */
-      h2, .text-2xl { font-size: 1.75rem !important; } /* 28px */
-      h3, .text-xl { font-size: 1.5rem !important; }   /* 24px */
-      h4, .text-lg { font-size: 1.25rem !important; font-weight: 600 !important; } /* 20px */
-
-      /* Data Tables with Monospace Font */
-      table, .font-mono, pre, code {
-        font-family: 'JetBrains Mono', monospace !important;
-      }
-      /* Adjust table/code font size for better density */
-      table th, table td, pre, code {
-        font-size: 15px !important;
-      }
-
-      /* Input Fields and Buttons */
-      input, textarea, button, select {
-        font-size: 17px !important;
-      }
-
-      /* Tailwind relative size overrides for consistency with new base */
-      .text-base { font-size: 18px !important; }
-      .text-sm { font-size: 16px !important; }
-      .text-xs { font-size: 14px !important; }
-
-      body {
+      html, body {
+        font-family: 'Inter', sans-serif;
+        font-size: 16px;
         background-color: var(--color-background);
-      }
-      
-      .bg-gradient-card {
-        background-image: linear-gradient(to bottom right, var(--gradient-card-start), var(--gradient-card-end));
+        color: var(--color-text-primary);
+        margin: 0;
+        padding: 0;
       }
     </style>
-<script type="importmap">
+  <script type="importmap">
 {
   "imports": {
     "react/": "https://esm.sh/react@^19.2.4/",
