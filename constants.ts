@@ -12,6 +12,38 @@ export const PENDING_ALERTS: Alert[] = [
     { id: 'A004', caseId: '88294', riskScore: 85, type: 'Rapid Movement of Funds', date: '2023-10-24' },
 ];
 
+// FIX: Add SAR_DATA constant for BarclaysSARForm.
+export const SAR_DATA = {
+    section1: {
+        internalCaseId: "BAR-SAR-2023-88291",
+        customerCif: "CUST-RG-47583",
+        linkedAccountIds: "109283745, 109283746, 109283747",
+        productType: "Savings / Current / Wealth / Corporate",
+        customerRiskRating: "High",
+        ncaGlossaryCode: "XXMLXX"
+    },
+    section2: {
+        parties: [
+            {
+                name: "Rahul Gupta",
+                dob: "15/05/1985",
+                address: "B-402, Lotus Business Park, Goregaon East, Mumbai, 400063, India",
+                contactDetails: "+91 98200 12345 / r.gupta.export@example.com",
+                additionalDetails: "Sole proprietor of 'Gupta Global Trades'. High-frequency trader in textiles.",
+                suspectedInvolvement: "Primary account holder and beneficiary of all transactions flagged for potential structuring. Directed the execution of multiple sub-threshold cash movements."
+            }
+        ]
+    },
+    section5: {
+        reporterName: "Priya S.",
+        contactNumber: "+91 22 4000 1234 (GFC-MUM)",
+        dateOfReport: new Date().toLocaleDateString('en-GB'),
+    },
+    section6: {
+        rationale: "AI G1 VERIFICATION AGENT: Narrative aligns with transactional data. Structuring pattern confirmed across 47 transactions. Risk score (95) exceeds threshold. Filing is mandatory."
+    }
+};
+
 export const CASE_DETAILS = {
     subjectName: 'Rahul Gupta',
     kyc: {

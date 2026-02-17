@@ -1,5 +1,5 @@
 {
-  "name": "SAR Management System & Narrative Generator",
+  "name": "SARify: SAR Management & Narrative Generator",
   "description": "An enterprise-grade application for Suspicious Activity Report (SAR) management, featuring AI-powered case assignment, investigation assistance, and narrative generation with a multi-step workflow for analysts and administrators.",
   "requestFramePermissions": []
 }

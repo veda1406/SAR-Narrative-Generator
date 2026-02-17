@@ -1,163 +1,204 @@
 
 import React, { useState } from 'react';
-import { CASE_DETAILS, AI_NARRATIVE_G1 } from '../../constants';
+import { SAR_DATA } from '../../constants';
 
 interface BarclaysSARFormProps {
     narrative: string;
     onNarrativeChange: (text: string) => void;
     onFinalize: () => void;
+    onCitationClick: (citationKey: string) => void;
 }
 
-const SECTION_STYLE = "border border-border/40 rounded-lg overflow-hidden mb-3 bg-surface/20";
-// Kept ultra-tight vertical padding for a dense, professional look
-const SECTION_HEADER = "px-4 py-0.5 bg-elevated-surface/20 border-b border-border/20 flex justify-between items-center cursor-pointer hover:bg-border/10 transition-colors";
-const READ_ONLY_GRID = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3 p-4 text-xs";
-const LABEL_STYLE = "text-text-secondary font-bold mb-1 block uppercase text-[9px] tracking-[0.1em]";
-const VALUE_STYLE = "text-text-primary font-mono bg-background/30 px-3 py-1.5 rounded border border-border/30 w-full disabled:opacity-70 text-[13px]";
+const ReadOnlyField: React.FC<{ label: string; value: string | React.ReactNode; fullWidth?: boolean }> = ({ label, value, fullWidth = false }) => (
+    <div className={`border-b border-slate-200 ${fullWidth ? 'col-span-2' : ''}`}>
+        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 pt-2">{label}</label>
+        <div className="p-3 text-sm text-slate-800 bg-slate-50/50 min-h-[44px] flex items-center">{value}</div>
+    </div>
+);
 
-const BarclaysSARForm: React.FC<BarclaysSARFormProps> = ({ narrative, onNarrativeChange, onFinalize }) => {
-    const [openSections, setOpenSections] = useState<Record<number, boolean>>({
-        1: false,
-        2: false,
-        3: true,
-        5: false,
-        6: false
+const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
+    <h2 className="text-sm font-bold text-slate-700 bg-slate-100 p-3 border-b border-slate-200 uppercase tracking-wide">{title}</h2>
+);
+
+const renderNarrativeWithCitations = (text: string, onCitationClick: (key: string) => void) => {
+    // Regex to split by [Ref: ...] patterns
+    const parts = text.split(/(\[Ref: .*?\])/g);
+    
+    return parts.map((part, index) => {
+      // Check if the current part matches the citation format
+      const match = part.match(/^\[Ref: (.*?)\]$/);
+      if (match) {
+        const key = match[1]; // Extract the ID inside the reference
+        return (
+          <button
+            key={index}
+            type="button"
+            onClick={() => onCitationClick(key)}
+            className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md cursor-pointer hover:bg-blue-200 font-bold mx-1 inline-flex items-center text-xs align-middle transition-colors border border-blue-200"
+            title="Click to view evidence details"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+            {part}
+          </button>
+        );
+      }
+      return <span key={index}>{part}</span>;
     });
+};
 
-    const toggleSection = (id: number) => {
-        setOpenSections(prev => ({ ...prev, [id]: !prev[id] }));
-    };
-
+const BarclaysSARForm: React.FC<BarclaysSARFormProps> = ({ narrative, onNarrativeChange, onFinalize, onCitationClick }) => {
+    const [isPreviewMode, setIsPreviewMode] = useState(false);
+    
     return (
-        <div className="max-w-5xl mx-auto bg-white dark:bg-slate-900 shadow-xl rounded-xl border-t-[6px] border-brand-primary overflow-hidden mb-12 ring-1 ring-black/5">
-            {/* Header Branding & Warnings */}
-            <div className="p-6 border-b border-border/60 bg-slate-50 dark:bg-slate-800/40">
-                <div className="flex justify-between items-start mb-4">
-                    <div>
-                        <h1 className="text-[22px] font-black text-brand-primary tracking-tighter uppercase leading-none">Barclays</h1>
-                        <p className="text-[11px] font-bold text-text-secondary mt-1 tracking-[0.2em] uppercase opacity-70">Global Compliance Ops</p>
-                    </div>
-                    <div className="text-right">
-                        <p className="text-status-high font-bold text-[10px] bg-status-high-bg px-2.5 py-1 rounded border border-status-high/20 inline-block uppercase tracking-wider">
-                            RESTRICTED – AML CONFIDENTIAL
-                        </p>
-                    </div>
-                </div>
-
-                <div className="bg-status-high-bg/30 border-l-2 border-status-high p-3 rounded-sm">
-                    <p className="text-status-high text-[9px] font-black uppercase mb-0.5 tracking-wider">Legal Notice: POCA 2002</p>
-                    <p className="text-status-high text-[11px] leading-tight opacity-80">
-                        Unauthorized disclosure constitutes a "tip-off" offense. This document is restricted to Compliance personnel.
+        <div className="max-w-4xl mx-auto bg-white shadow-lg border border-slate-200 font-sans text-slate-900 mb-20">
+            
+            <div className="p-6 border-b-2 border-slate-300">
+                <p className="text-xs font-bold tracking-wider text-center text-slate-600">[BARCLAYS INTERNAL USE ONLY] RESTRICTED – AML CONFIDENTIAL</p>
+                
+                <div className="mt-6 bg-red-50 border-l-4 border-red-500 text-red-800 p-4 text-xs">
+                    <p className="font-bold">WARNING: Proceeds of Crime Act 2002 (POCA) and Terrorism Act 2000 (TACT)</p>
+                    <p className="mt-1">
+                        Disclosure of this report to any person outside of the Financial Crime / Compliance department may constitute the criminal offense of "Tipping Off" under Section 333A of POCA. This report must not be disclosed to the subject.
                     </p>
                 </div>
             </div>
 
-            {/* Form Body */}
-            <div className="p-6 space-y-3">
+            <div className="p-6 space-y-6">
+                {/* SECTION 1 */}
+                <div className="border border-slate-200">
+                    <SectionHeader title="Section 1 – Case Control & Regulatory Flags" />
+                    <div className="grid grid-cols-2">
+                        <ReadOnlyField label="Internal Case ID" value={SAR_DATA.section1.internalCaseId} />
+                        <ReadOnlyField label="Customer CIF / Party ID" value={SAR_DATA.section1.customerCif} />
+                        <ReadOnlyField label="Linked Account ID(s)" value={SAR_DATA.section1.linkedAccountIds} fullWidth={true} />
+                        <ReadOnlyField label="Product Type" value={SAR_DATA.section1.productType} />
+                        <ReadOnlyField label="Customer Risk Rating" value={SAR_DATA.section1.customerRiskRating} />
+                        <ReadOnlyField label="NCA Glossary Code" value={SAR_DATA.section1.ncaGlossaryCode} fullWidth={true} />
+                    </div>
+                </div>
+
+                {/* SECTION 2 */}
+                <div className="border border-slate-200">
+                    <SectionHeader title="Section 2 – Individuals / Relevant Parties" />
+                    {SAR_DATA.section2.parties.length > 0 ? (
+                        SAR_DATA.section2.parties.map((party, index) => (
+                            <div key={index} className={index > 0 ? 'border-t-2 border-slate-300' : ''}>
+                                <h3 className="text-xs font-bold text-slate-600 bg-slate-50 p-2 border-b border-slate-200">Individual / Relevant Party {index + 1}</h3>
+                                <div className="grid grid-cols-1">
+                                    <ReadOnlyField label="Name" value={party.name} fullWidth={true} />
+                                    <ReadOnlyField label="Date of birth" value={party.dob} fullWidth={true}/>
+                                    <ReadOnlyField label="Address" value={party.address} fullWidth={true}/>
+                                    <ReadOnlyField label="Contact details" value={party.contactDetails} fullWidth={true}/>
+                                    <ReadOnlyField label="Additional details" value={party.additionalDetails} fullWidth={true}/>
+                                    <ReadOnlyField label="Suspected involvement" value={party.suspectedInvolvement} fullWidth={true}/>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="p-4 text-sm text-red-600 bg-red-50">
+                            <strong>Mandatory Rule Violation:</strong> At least ONE individual / relevant party MUST be included. This section cannot be empty.
+                        </div>
+                    )}
+                </div>
                 
-                {/* Section 1 - CASE CONTROL */}
-                <div className={SECTION_STYLE}>
-                    <div className={SECTION_HEADER} onClick={() => toggleSection(1)}>
-                        {/* Reduced size to 10px and lowered opacity to 50% for minimal prominence */}
-                        <h3 className="text-[10px] font-medium uppercase tracking-tight text-text-secondary/50">SECTION 1 – CASE CONTROL</h3>
-                        <span className="text-text-secondary/30 text-[10px]">{openSections[1] ? '▲' : '▼'}</span>
-                    </div>
-                    {openSections[1] && (
-                        <div className={READ_ONLY_GRID}>
-                            <div>
-                                <label className={LABEL_STYLE}>Internal Case ID</label>
-                                <input className={VALUE_STYLE} value="BAR-SAR-2023-88291" disabled />
-                            </div>
-                            <div>
-                                <label className={LABEL_STYLE}>CIF / Party ID</label>
-                                <input className={VALUE_STYLE} value="CUST-RG-47583" disabled />
-                            </div>
-                            <div>
-                                <label className={LABEL_STYLE}>Risk Rating</label>
-                                <input className={`${VALUE_STYLE} text-status-high font-black`} value="HIGH" disabled />
-                            </div>
+                {/* SECTION 3 - HYBRID EDIT/VIEW */}
+                <div className="border border-slate-200">
+                    <SectionHeader title="Section 3 – Reason for Suspicion" />
+                    <div className="p-4 space-y-4">
+                        <div className="text-xs text-slate-600 leading-normal p-3 bg-slate-50 border border-slate-200 rounded-md">
+                            The narrative must list events chronologically, be clear, concise, and simple, explicitly address Who, What, Where, When, Why, and How, include key dates, describe the criminal property, explain how the situation came to attention, and what led to suspicion.
                         </div>
-                    )}
-                </div>
-
-                {/* Section 2 - SUBJECT DETAILS */}
-                <div className={SECTION_STYLE}>
-                    <div className={SECTION_HEADER} onClick={() => toggleSection(2)}>
-                        <h3 className="text-[10px] font-medium uppercase tracking-tight text-text-secondary/50">SECTION 2 – SUBJECT DETAILS</h3>
-                        <span className="text-text-secondary/30 text-[10px]">{openSections[2] ? '▲' : '▼'}</span>
-                    </div>
-                    {openSections[2] && (
-                        <div className="p-4 bg-background/20">
-                            <div className="grid grid-cols-2 gap-6">
-                                <div>
-                                    <p className={LABEL_STYLE}>Full Legal Name</p>
-                                    <p className="text-[13px] font-bold text-text-primary">{CASE_DETAILS.subjectName}</p>
-                                </div>
-                                <div>
-                                    <p className={LABEL_STYLE}>Verification Status</p>
-                                    <p className="text-[11px] text-status-low font-bold italic uppercase">KYC Level 3 Verified</p>
-                                </div>
-                            </div>
+                        
+                        {/* Toggle Switch */}
+                        <div className="flex justify-end items-center space-x-3 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                            <span className={`text-xs font-bold uppercase tracking-wide transition-colors ${!isPreviewMode ? 'text-blue-700' : 'text-slate-400'}`}>
+                                Edit Mode
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() => setIsPreviewMode(!isPreviewMode)}
+                                className={`relative inline-flex items-center h-5 rounded-full w-10 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isPreviewMode ? 'bg-blue-600' : 'bg-slate-300'}`}
+                                aria-pressed={isPreviewMode}
+                            >
+                                <span className={`inline-block w-3 h-3 transform bg-white rounded-full transition-transform shadow-sm ${isPreviewMode ? 'translate-x-6' : 'translate-x-1'}`} />
+                            </button>
+                            <span className={`text-xs font-bold uppercase tracking-wide transition-colors ${isPreviewMode ? 'text-blue-700' : 'text-slate-400'}`}>
+                                Review Citations
+                            </span>
                         </div>
-                    )}
-                </div>
-
-                {/* Section 3 - REASON FOR SUSPICION */}
-                <div className={SECTION_STYLE}>
-                    <div className={SECTION_HEADER} onClick={() => toggleSection(3)}>
-                        <h3 className="text-[10px] font-medium uppercase tracking-tight text-text-secondary/50">SECTION 3 – REASON FOR SUSPICION</h3>
-                        <span className="text-text-secondary/30 text-[10px]">{openSections[3] ? '▲' : '▼'}</span>
-                    </div>
-                    {openSections[3] && (
-                        <div className="p-5 bg-white dark:bg-slate-800">
-                            <p className="text-[10px] text-text-secondary mb-4 italic opacity-70">
-                                Draft generated from AI investigation. Ensure 'Who, What, Where, When, Why, How' is clearly articulated.
-                            </p>
-                            <textarea 
+                        
+                        {/* Input Area */}
+                        {isPreviewMode ? (
+                            <div className="w-full h-96 p-4 text-sm text-slate-900 border border-blue-200 bg-blue-50/10 rounded-md overflow-y-auto whitespace-pre-wrap leading-relaxed shadow-inner">
+                                {renderNarrativeWithCitations(narrative, onCitationClick)}
+                            </div>
+                        ) : (
+                             <textarea 
                                 value={narrative}
                                 onChange={(e) => onNarrativeChange(e.target.value)}
-                                className="w-full h-[450px] p-5 text-[14px] leading-relaxed text-text-primary bg-slate-50/50 dark:bg-slate-900/40 border border-border/60 focus:ring-1 focus:ring-brand-interactive focus:border-brand-interactive rounded-md font-sans transition-all resize-none shadow-inner"
-                                placeholder="Input suspicion details..."
+                                className="w-full h-96 p-4 text-sm text-slate-900 border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none rounded-md leading-relaxed shadow-sm transition-shadow"
+                                placeholder="Enter narrative details here. Use format [Ref: ID] to cite evidence..."
+                                disabled={false}
                             />
-                        </div>
-                    )}
-                </div>
-
-                {/* Section 5 & 6 compacted */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className={SECTION_STYLE}>
-                        <div className={SECTION_HEADER} onClick={() => toggleSection(5)}>
-                            <h3 className="text-[10px] font-medium uppercase tracking-tight text-text-secondary/50">REPORTER</h3>
-                            <span className="text-text-secondary/30 text-[10px]">{openSections[5] ? '▲' : '▼'}</span>
-                        </div>
-                        {openSections[5] && <div className="p-3 text-[11px] text-text-secondary font-mono uppercase">P. Sharma (EMP-1092)</div>}
+                        )}
                     </div>
-                    <div className={SECTION_STYLE}>
-                        <div className={SECTION_HEADER} onClick={() => toggleSection(6)}>
-                            <h3 className="text-[10px] font-medium uppercase tracking-tight text-text-secondary/50">AI ASSURANCE</h3>
-                            <span className="text-text-secondary/30 text-[10px]">{openSections[6] ? '▲' : '▼'}</span>
+                </div>
+            
+                {/* SECTION 4 */}
+                <div className="border border-slate-200">
+                    <SectionHeader title="Section 4 – Supporting Documentation" />
+                    <div className="p-4">
+                        <div className="text-xs text-slate-600 leading-normal mb-3 p-3 bg-slate-50 border border-slate-200 rounded-md">
+                            Describe what the supporting documentation is, how it relates to the report, and why it is relevant. Examples include copies of correspondence, customer files, internal records, or information obtained during the investigation.
                         </div>
-                        {openSections[6] && <div className="p-3 text-[10px] text-status-info italic leading-tight">Citations verified against internal ledger. Structuring confidence: 94%.</div>}
+                        <textarea 
+                            className="w-full h-24 p-3 text-sm border border-slate-200 bg-slate-50/50 text-slate-500 italic outline-none rounded-md"
+                            placeholder="No supporting documents attached or described."
+                            readOnly
+                        />
                     </div>
                 </div>
 
-                {/* Submit Action */}
-                <div className="pt-8 pb-4 flex justify-center border-t border-border/40">
+                {/* SECTION 5 */}
+                <div className="border border-slate-200">
+                    <SectionHeader title="Section 5 – Reporter Details" />
+                    <div className="grid grid-cols-1">
+                        <ReadOnlyField label="Name" value={SAR_DATA.section5.reporterName} fullWidth={true} />
+                        <ReadOnlyField label="Contact number" value={SAR_DATA.section5.contactNumber} fullWidth={true}/>
+                        <ReadOnlyField label="Date of report" value={SAR_DATA.section5.dateOfReport} fullWidth={true}/>
+                    </div>
+                </div>
+                
+                {/* SECTION 6 */}
+                <div className="border border-slate-200">
+                    <SectionHeader title="Section 6 – To be completed by Admin" />
+                    <div className="grid grid-cols-1">
+                         <div className="border-b border-slate-200">
+                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 pt-2">Reported to NCA?</label>
+                            <div className="p-3">
+                                <select className="w-full bg-slate-50/50 p-2 border border-slate-200 rounded-md text-sm text-slate-500" disabled>
+                                    <option>Choose an item.</option>
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <ReadOnlyField label="Record rationale in support of making SAR, or for deciding not to" value={SAR_DATA.section6.rationale} fullWidth={true}/>
+                        <ReadOnlyField label="Date of report made to NCA" value="[Admin Input]" fullWidth={true}/>
+                        <ReadOnlyField label="Signed" value="[Admin Input]" fullWidth={true}/>
+                        <ReadOnlyField label="Date" value="[Admin Input]" fullWidth={true}/>
+                    </div>
+                </div>
+
+                {/* ACTIONS */}
+                <div className="flex justify-center pt-6 border-t border-slate-200">
                     <button 
-                        onClick={onFinalize}
-                        className="px-12 py-3 bg-brand-primary hover:bg-brand-primary/95 text-white text-xs font-black uppercase tracking-[0.2em] rounded shadow-lg shadow-brand-primary/10 transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center space-x-3"
+                        onClick={() => onFinalize()}
+                        className="bg-blue-900 text-white px-8 py-3 font-bold text-xs uppercase tracking-widest hover:bg-blue-800 active:scale-95 transition-all shadow-md rounded-sm"
                     >
-                        <span>Finalize & Submit SAR</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
+                        Submit for G2 Review
                     </button>
                 </div>
-            </div>
-
-            {/* Compact Footer */}
-            <div className="bg-slate-100 dark:bg-slate-800/80 p-3 text-center text-[8px] text-text-secondary font-mono tracking-widest opacity-60 uppercase">
-                Systems Secure • BARCLAYS Document Cloud • {new Date().toLocaleDateString()}
             </div>
         </div>
     );

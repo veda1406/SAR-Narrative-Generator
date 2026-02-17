@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { AI_NARRATIVE_G1 } from '../../constants';
+import { AI_NARRATIVE_G1, CITATIONS } from '../../constants';
 import ProgressStepper from './common/ProgressStepper';
 import BarclaysSARForm from './BarclaysSARForm';
+import CitationModal from './common/CitationModal';
 
 interface EditingViewProps {
   onProceed: () => void;
@@ -13,6 +14,7 @@ const EditingView: React.FC<EditingViewProps> = ({ onProceed }) => {
   
   const [narrative, setNarrative] = useState(AI_NARRATIVE_G1);
   const [warning, setWarning] = useState<string | null>(null);
+  const [activeCitation, setActiveCitation] = useState<string | null>(null);
   const isInitialMount = useRef(true);
 
   useEffect(() => {
@@ -30,6 +32,14 @@ const EditingView: React.FC<EditingViewProps> = ({ onProceed }) => {
       setWarning(null);
     }
   }, [narrative, originalAmount]);
+
+  const handleCitationClick = (citationKey: string) => {
+    if (CITATIONS[citationKey]) {
+        setActiveCitation(citationKey);
+    } else {
+        console.warn(`Citation key "${citationKey}" not found.`);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -51,8 +61,17 @@ const EditingView: React.FC<EditingViewProps> = ({ onProceed }) => {
       <BarclaysSARForm 
         narrative={narrative} 
         onNarrativeChange={setNarrative} 
-        onFinalize={onProceed} 
+        onFinalize={onProceed}
+        onCitationClick={handleCitationClick}
       />
+
+      {activeCitation && CITATIONS[activeCitation] && (
+        <CitationModal
+            citationKey={activeCitation}
+            citationData={CITATIONS[activeCitation]}
+            onClose={() => setActiveCitation(null)}
+        />
+      )}
     </div>
   );
 };
