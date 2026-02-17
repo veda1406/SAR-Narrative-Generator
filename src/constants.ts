@@ -82,22 +82,24 @@ export const RAW_JSON_DATA = JSON.stringify({
     transactions: CASE_DETAILS.transactions.slice(0, 5)
 }, null, 2);
 
-export const AI_NARRATIVE_G1 = `On October 26, 2023, an internal review was initiated for Rahul Gupta (CUST-RG-47583), an Import/Export Business Owner, following automated alerts for potential structuring activity, also known as smurfing. The investigation focused on account activity between October 1, 2023, and October 25, 2023.
-
-During this period, a pattern of 47 transactions totaling INR 49,50,000 was identified. These transactions involved numerous cash deposits and withdrawals, with individual amounts consistently falling just below the INR 10,00,000 regulatory reporting threshold [Ref: TXN-01]. This activity occurred across multiple branch locations within a 24-hour window, suggesting a deliberate attempt by the subject to avoid detection and circumvent reporting requirements.
-
-Immediately following these structured deposits, the aggregated funds were rapidly transferred via immediate payment channels to a Dubai-based entity [Ref: TXN-02]. This rapid layering of funds to an offshore jurisdiction, combined with the structured deposits, is inconsistent with the subject's stated occupation and lacks a clear, legitimate commercial justification or corresponding trade documentation.
-
-The behavior exhibited by Rahul Gupta, specifically the systematic structuring of transactions below reporting thresholds and the subsequent rapid transfer of accumulated funds to a Dubai-based entity, raises suspicion that the subject is attempting to conceal the true source and destination of these funds. A Suspicious Activity Report (SAR) is therefore recommended to relevant authorities.`;
+export const AI_NARRATIVE_G1 = `Between October 1, 2023, and October 25, 2023, the account of Rahul Gupta, an Import/Export Business Owner [Ref: KYC-01], was flagged for suspicious transactional patterns. An internal review identified 47 discrete cash transactions, comprising both deposits and withdrawals, which totaled INR 49.5L [Ref: TXN-01]. These movements were conducted across multiple branch locations and exhibited a systematic pattern of structuring, with individual amounts consistently maintained just below the INR 10,00,000 regulatory reporting threshold [Ref: TXN-02]. Following the aggregation of these cash holdings, the funds were rapidly transferred in their entirety to an offshore beneficiary, 'Global Trade Dubai' [Ref: TXN-03]. This sequence of sub-threshold cash activity followed by immediate international layering lacks legitimate commercial justification and is inconsistent with the subject's stated business profile [Ref: KYC-01]. The behavior strongly indicates an intent to evade AML reporting requirements and conceal the true origin and destination of funds.`;
 
 export const CITATIONS = {
     'TXN-01': {
-        description: 'Structuring Pattern: 47 Cash Transactions',
-        details: 'Total Volume: INR 49,50,000. Date Range: Oct 1-25, 2023. Pattern: Cash deposits/withdrawals consistently between 9.5L and 9.9L INR across 4 distinct branches.'
+        description: 'Transaction Volume Summary',
+        details: 'Identified 47 discrete cash transactions (deposits and withdrawals) totaling INR 49.5L between 01/10/2023 and 25/10/2023.'
     },
     'TXN-02': {
-        description: 'Rapid Outflow to High-Risk Jurisdiction (Dubai)',
-        details: 'Beneficiary: Al-Falak General Trading LLC (UAE). Amount: INR 48,20,000. Timeframe: Transfers executed within 2 hours of cash deposits. No invoice attached.'
+        description: 'Structuring Pattern Analysis',
+        details: 'Pattern of cash deposits/withdrawals consistently ranging from INR 9,50,000 to INR 9,90,000, designed to avoid the INR 10,00,000 reporting threshold.'
+    },
+    'TXN-03': {
+        description: 'Offshore Fund Layering',
+        details: 'Immediate transfer of aggregated cash funds to "Global Trade Dubai" (UAE). Transfers executed within 24 hours of cash accumulations without corresponding invoices.'
+    },
+    'KYC-01': {
+        description: 'Subject Profile Verification',
+        details: 'Rahul Gupta (CUST-RG-47583). Occupation: Import/Export Business Owner. Risk Rating: High. Stated income does not align with identified cash volumes.'
     }
 };
 
